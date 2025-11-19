@@ -6,6 +6,7 @@
     <title>Date Progress Calculator</title>
 </head>
 <body>
+
     <p>Start Date: <span id="startDate"></span></p>
     <p>End Date: <span id="endDate"></span></p>
     <p>Today: <span id="today"></span></p>
@@ -20,23 +21,41 @@
             const endDate = params.get('end');
 
             // Calculate and display result
-            if (startDate && endDate) {
-                const today = new Date();
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                const now = new Date(todayDate);
+            if (startDate && endDate) {                
+                // Strip "-" and "." from date strings before creating Date objects
+                const cleanStartDate = startDate.replace(/[-.]/g, '');
+                const cleanEndDate = endDate.replace(/[-.]/g, '');
 
-                const diffTime = Math.abs(end - now);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                document.getElementById('testing').textContent = diffDays;
-                document.getElementById('startDate').textContent = start.toISOString().split('T')[0];
-                document.getElementById('endDate').textContent = end.toISOString().split('T')[0];
-                document.getElementById('today').textContent = today.toISOString().split('T')[0];
-                document.getElementById('result').textContent = diffDays + (diffDays === 1 ? ' day' : ' days');
+                // Helper function to parse YYYYMMDD strings
+                function parseYYYYMMDD(dateString) {
+                    if (dateString.length !== 8 || !/^\d+$/.test(dateString)) {
+                        return new Date(NaN); // Return an invalid date
+                    }
+                    const year = dateString.substring(0, 4);
+                    const month = dateString.substring(4, 6);
+                    const day = dateString.substring(6, 8);
+                    // Month is 0-indexed in JavaScript's Date constructor (0=Jan, 11=Dec)
+                    return new Date(year, month - 1, day);
+                }
+
+                const today = new Date();
+                const start = parseYYYYMMDD(cleanStartDate);
+                const end = parseYYYYMMDD(cleanEndDate);
+                
+                // Check if dates are valid before calculating
+                if (!isNaN(start) && !isNaN(end)) {
+                    const diffTime = Math.abs(end - today);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    document.getElementById('startDate').textContent = start.toISOString().split('T')[0];
+                    document.getElementById('endDate').textContent = end.toISOString().split('T')[0];
+                    document.getElementById('today').textContent = today.toISOString().split('T')[0];
+                    document.getElementById('result').textContent = diffDays + (diffDays === 1 ? ' day' : ' days');
+                } else {
+                    document.getElementById('result').textContent = 'Please provide valid start and end dates (e.g., YYYY-MM-DD)';
+                }
             } else {
                 document.getElementById('result').textContent = 'Please provide both start and end dates in URL';
             }
         })();
     </script>
 </body>
-</html>

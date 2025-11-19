@@ -20,12 +20,18 @@
 
             // Calculate and display result
             if (startDate && endDate) {
+                const today = new Date();
+                const todayDate = today.toISOString().split('T')[0];
                 const start = new Date(startDate);
                 const end = new Date(endDate);
+                const now = new Date(todayDate);
 
-                const diffTime = Math.abs(end - start);
+                const diffTime = Math.abs(end - now);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+                document.getElementById('startDate').textContent = startDate);
+                document.getElementById('endDate').textContent = endDate);
+                document.getElementById('today').textContent = todayDate);
                 document.getElementById('result').textContent = diffDays + (diffDays === 1 ? ' day' : ' days');
             } else {
                 document.getElementById('result').textContent = 'Please provide both start and end dates in URL';
